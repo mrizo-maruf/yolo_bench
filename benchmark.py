@@ -50,13 +50,14 @@ class YOLOBenchmark:
             # Get benchmark config
             bench_config = self.config['benchmark']
             
-            # Warmup
+            # Warmup - perform actual inference to properly warm up model and GPU
             print(f"Warming up for {bench_config['warmup']} iterations...")
+            dummy_input = torch.randn(1, 3, bench_config['imgsz'], bench_config['imgsz'])
+            if torch.cuda.is_available() and bench_config['device'] != 'cpu':
+                dummy_input = dummy_input.cuda()
+            
             for _ in range(bench_config['warmup']):
-                # Use a dummy tensor for warmup
-                dummy_input = torch.randn(1, 3, bench_config['imgsz'], bench_config['imgsz'])
-                if torch.cuda.is_available() and bench_config['device'] != 'cpu':
-                    dummy_input = dummy_input.cuda()
+                _ = model.predict(dummy_input, verbose=False)
             
             # Validate on dataset
             print("Running validation...")
@@ -70,16 +71,17 @@ class YOLOBenchmark:
                 verbose=self.config['output']['verbose']
             )
             
-            # Get metrics
+            # Get metrics - try multiple possible keys for robustness across ultralytics versions
+            results_dict = val_results.results_dict
             metrics = {
                 'model': model_path,
                 'version': model_version,
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                 'parameters': sum(p.numel() for p in model.model.parameters()),
-                'map50': val_results.results_dict.get('metrics/mAP50(B)', 0),
-                'map50_95': val_results.results_dict.get('metrics/mAP50-95(B)', 0),
-                'precision': val_results.results_dict.get('metrics/precision(B)', 0),
-                'recall': val_results.results_dict.get('metrics/recall(B)', 0),
+                'map50': results_dict.get('metrics/mAP50(B)', results_dict.get('metrics/mAP50', 0)),
+                'map50_95': results_dict.get('metrics/mAP50-95(B)', results_dict.get('metrics/mAP50-95', 0)),
+                'precision': results_dict.get('metrics/precision(B)', results_dict.get('metrics/precision', 0)),
+                'recall': results_dict.get('metrics/recall(B)', results_dict.get('metrics/recall', 0)),
             }
             
             # Measure inference speed
@@ -129,7 +131,10 @@ class YOLOBenchmark:
             return metrics
             
         except Exception as e:
-            print(f"Error benchmarking {model_path}: {str(e)}")
+            import traceback
+            print(f"Error benchmarking {model_path} ({model_version}): {str(e)}")
+            print("Full traceback:")
+            traceback.print_exc()
             return None
     
     def run_benchmark(self):

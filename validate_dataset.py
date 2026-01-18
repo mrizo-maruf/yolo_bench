@@ -39,7 +39,9 @@ def validate_dataset(data_yaml_path: str):
     for split in ['train', 'val']:
         if split in data:
             images_path = dataset_path / data[split]
-            labels_path = dataset_path / 'labels' / split.split('/')[-1]
+            # Use pathlib for cross-platform compatibility
+            split_name = Path(data[split]).name
+            labels_path = dataset_path / 'labels' / split_name
             
             if not images_path.exists():
                 print(f"❌ {split} images path does not exist: {images_path}")
@@ -94,7 +96,9 @@ def generate_dataset_stats(data_yaml_path: str):
         if split not in data:
             continue
         
-        labels_path = dataset_path / 'labels' / split.split('/')[-1]
+        # Use pathlib for cross-platform compatibility
+        split_name = Path(data[split]).name if isinstance(data[split], str) else split
+        labels_path = dataset_path / 'labels' / split_name
         if not labels_path.exists():
             continue
         
