@@ -1,0 +1,25 @@
+# Example dataset configuration for YOLO format
+# This file should be in your dataset directory
+
+# Paths to your dataset (relative to this yaml file or absolute)
+path: /path/to/your/dataset  # dataset root dir
+train: images/train  # train images (relative to 'path')
+val: images/val  # val images (relative to 'path')
+test: images/test  # test images (optional)
+
+# Classes
+names:
+  0: person
+  1: bicycle
+  2: car
+  3: motorcycle
+  4: airplane
+  5: bus
+  6: train
+  7: truck
+  8: boat
+  9: traffic light
+  # Add your custom classes here
+
+# Number of classes
+nc: 10  # update this to match your number of classes
