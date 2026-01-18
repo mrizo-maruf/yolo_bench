@@ -1,0 +1,71 @@
+# YOLO Benchmarking Configuration
+
+# Dataset Configuration
+dataset:
+  # Path to your custom dataset in YOLO format
+  data_yaml: "path/to/your/dataset/data.yaml"
+  # Alternatively, specify paths directly:
+  # train: "path/to/train/images"
+  # val: "path/to/val/images"
+  # test: "path/to/test/images"
+  # names: ["class1", "class2", ...]
+  # nc: 80  # number of classes
+
+# Models to benchmark
+models:
+  yolov8:
+    - yolov8n.pt  # nano
+    - yolov8s.pt  # small
+    - yolov8m.pt  # medium
+    # - yolov8l.pt  # large
+    # - yolov8x.pt  # extra large
+  
+  yolov11:
+    - yolo11n.pt  # nano
+    - yolo11s.pt  # small
+    - yolo11m.pt  # medium
+    # - yolo11l.pt  # large
+    # - yolo11x.pt  # extra large
+
+# Benchmark Configuration
+benchmark:
+  # Image size for inference
+  imgsz: 640
+  
+  # Batch size for inference
+  batch: 16
+  
+  # Confidence threshold
+  conf: 0.25
+  
+  # IoU threshold for NMS
+  iou: 0.45
+  
+  # Device to use (cuda, cpu, or device number like 0, 1)
+  device: 0
+  
+  # Number of warmup iterations
+  warmup: 10
+  
+  # Number of benchmark iterations
+  iterations: 100
+  
+  # Save predictions visualizations
+  save_images: true
+  
+  # Maximum images to save
+  max_images: 10
+
+# Output Configuration
+output:
+  # Directory to save results
+  results_dir: "results"
+  
+  # Generate comparison plots
+  generate_plots: true
+  
+  # Save detailed metrics to CSV
+  save_csv: true
+  
+  # Verbose output
+  verbose: true
