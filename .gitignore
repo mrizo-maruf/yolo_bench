@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+*.mp4
+*.vscode
+*.pt
 # C extensions
 *.so
 
